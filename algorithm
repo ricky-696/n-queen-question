@@ -1,0 +1,75 @@
+Public Class Form1
+    Dim n As Integer, count As Integer, time As Integer
+    Dim d(1, 1) As String '棋盤
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        count = 0 : time = 0
+        TextBox2.Text = ""
+        If IsNumeric(TextBox1.Text) Then n = TextBox1.Text
+            If n < 4 Then
+                TextBox2.Text = "在n>=4時才有解"
+            Else
+                ReDim d(n + 1, n + 1)
+                For i = 1 To n
+                    For j = 1 To n
+                        d(i, j) = "x"
+                    Next
+                Next
+            TextBox2.Text = TextBox2.Text & n & "個皇后在" & n & "x" & n & "棋盤不得互吃之擺法" & vbNewLine
+                Call queen(1, 1)
+        End If
+        TextBox1.Text = ""
+        Label1.Text = count & "種擺法(非獨立解)" & vbNewLine
+        TextBox1.Text = "呼叫遞迴" & time & "次"
+    End Sub
+    
+    Function queen(ByVal x As Integer, ByVal y As Integer)
+        time = time + 1
+        If y > n Then Return False
+        If x > n Then
+            Call write()
+            Return False
+        End If
+        Dim ate As Boolean = False
+        For i = 1 To n
+            If d(x, i) = "Q" Then ate = True
+            If d(i, y) = "Q" Then ate = True
+            If x + i <= n And y - i > 0 Then '斜吃判定
+                If d(x + i, y - i) = "Q" Then ate = True
+            End If
+            If x + i <= n And y + i <= n Then
+                If d(x + i, y + i) = "Q" Then ate = True
+            End If
+            If x - i > 0 And y + i <= n Then
+                If d(x - i, y + i) = "Q" Then ate = True
+            End If
+            If x - i > 0 And y - i > 0 Then
+                If d(x - i, y - i) = "Q" Then ate = True
+            End If
+        Next
+        If ate = False Then
+            d(x, y) = "Q"
+            queen(x + 1, 1)
+        Else
+            If queen(x, y + 1) = False Then
+                For i = 1 To n
+                    d(x, n) = "x"
+                Next
+            End If
+        End If
+        If d(x, y) = "Q" Then
+            d(x, y) = "x"
+            queen(x, y + 1)
+        End If
+    End Function
+    
+    Sub write()
+        count = count + 1
+        For i = 1 To n
+            For j = 1 To n
+                TextBox2.Text = TextBox2.Text & "  " & d(i, j)
+            Next
+            TextBox2.Text = TextBox2.Text & vbNewLine
+        Next
+        TextBox2.Text = TextBox2.Text & vbNewLine
+    End Sub
+End Class
